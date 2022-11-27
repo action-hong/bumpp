@@ -1,5 +1,5 @@
 import { valid as isValidVersion } from 'semver'
-import { readJsonFile } from './fs'
+import { readJsonFile, readTextFile } from './fs'
 import { isManifest } from './manifest'
 import type { Operation } from './operation'
 
@@ -11,7 +11,7 @@ export async function getOldVersion(operation: Operation): Promise<Operation> {
   const { cwd, files } = operation.options
 
   // Check all JSON files in the files list
-  const filesToCheck = files.filter(file => file.endsWith('.json'))
+  const filesToCheck = files.filter(file => file.endsWith('.json') || file.endsWith('.xml'))
 
   // Always check package.json
   if (!filesToCheck.includes('package.json'))
@@ -42,17 +42,26 @@ export async function getOldVersion(operation: Operation): Promise<Operation> {
  * @returns - The version number, or undefined if the file doesn't have a version number
  */
 async function readVersion(file: string, cwd: string): Promise<string | undefined> {
-  try {
-    const { data: manifest } = await readJsonFile(file, cwd)
-
-    if (isManifest(manifest)) {
-      if (isValidVersion(manifest.version))
-        return manifest.version
-    }
+  if (file.endsWith('.xml')) {
+    const { data } = await readTextFile(file, cwd)
+    const regex = /<widget.*?version="(.*?)"/
+    const group = regex.exec(data)
+    if (group)
+      return group[1]
   }
-  catch (error) {
-    // Ignore errors (no such file, not valid JSON, etc.)
-    // Just try the next file instead.
-    return undefined
+  else {
+    try {
+      const { data: manifest } = await readJsonFile(file, cwd)
+
+      if (isManifest(manifest)) {
+        if (isValidVersion(manifest.version))
+          return manifest.version
+      }
+    }
+    catch (error) {
+      // Ignore errors (no such file, not valid JSON, etc.)
+      // Just try the next file instead.
+      return undefined
+    }
   }
 }

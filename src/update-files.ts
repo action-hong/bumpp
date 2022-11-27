@@ -38,6 +38,9 @@ export async function updateFiles(operation: Operation): Promise<Operation> {
 async function updateFile(relPath: string, operation: Operation): Promise<boolean> {
   const name = path.basename(relPath).trim().toLowerCase()
 
+  if (name.endsWith('config.xml'))
+    return updateCordovaFile(relPath, operation)
+
   switch (name) {
     case 'package.json':
     case 'package-lock.json':
@@ -48,6 +51,30 @@ async function updateFile(relPath: string, operation: Operation): Promise<boolea
     default:
       return updateTextFile(relPath, operation)
   }
+}
+
+async function updateCordovaFile(relPath: string, operation: Operation): Promise<boolean> {
+  const { cwd } = operation.options
+  const { newVersion } = operation.state
+  let modified = false
+  const { data } = await readTextFile(relPath, cwd)
+  const regex = /\<widget.*? version=\"(.*?)\"/
+  const group = regex.exec(data)
+  if (group) {
+    const w = group[0]
+    const v = group[1]
+
+    const nw = w.replace(v, newVersion)
+
+    const nd = data.replace(w, nw)
+    await writeTextFile({
+      path: relPath,
+      data: nd,
+    })
+    modified = true
+  }
+
+  return modified
 }
 
 /**
