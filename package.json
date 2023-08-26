@@ -36,7 +36,7 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "bin": {
-    "bumpp": "bin/bumpp.js"
+    "kkbumpp": "bin/bumpp.js"
   },
   "files": [
     "bin",
