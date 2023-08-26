@@ -1,5 +1,5 @@
 {
-  "name": "bumpp",
+  "name": "kkbumpp",
   "version": "1.0.0",
   "packageManager": "pnpm@8.6.12",
   "description": "Bump version, commit changes, tag, and push to Git",
@@ -8,10 +8,10 @@
     "url": "https://jamesmessinger.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/antfu/bumpp",
+  "homepage": "https://github.com/action-hong/bumpp",
   "repository": {
     "type": "git",
-    "url": "https://github.com/antfu/bumpp.git"
+    "url": "https://github.com/action-hong/bumpp.git"
   },
   "keywords": [
     "version",
