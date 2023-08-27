@@ -23,7 +23,7 @@ export interface ParsedArgs {
  */
 export async function parseArgs(): Promise<ParsedArgs> {
   try {
-    const cli = cac('bumpp')
+    const cli = cac('kkbumpp')
 
     cli
       .version(version)
